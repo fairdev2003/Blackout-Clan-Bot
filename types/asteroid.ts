@@ -1,12 +1,12 @@
-export interface ClanMember {
+export type ClanMember = {
   id: string;
   level: string;
   name: string;
   rank: string;
   valor: number;
-}
+};
 
-export interface ClanInfo {
+export type ClanInfo = {
   clan_announcement: string;
   clan_id: string;
   clan_logo: string;
@@ -28,17 +28,27 @@ export interface ClanInfo {
   tank_power: number;
   type: string;
   valor_points: number;
-}
+};
 
-export interface Snapshot {
+export type Snapshot = {
   clan_info: ClanInfo;
   members: ClanMember[];
   timestamp?: number;
-}
+};
 
-export interface ClanData {
+export type ClanData = {
   clan_info: ClanInfo;
   members: ClanMember[];
   search_count: number;
   snapshots: Snapshot[];
-}
+};
+
+export type ValorHistoryEntry = {
+  recorded_at: string;
+  valor: number;
+};
+
+export type ValorHistoryResponse = {
+  history: ValorHistoryEntry[];
+  success: boolean;
+};
