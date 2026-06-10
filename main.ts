@@ -7,8 +7,12 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 const commands = [
   {
-    name: "ping",
-    description: "Sprawdza czy bot żyje!",
+    name: "clan_id",
+    description: "Showing current id of blackout clan!",
+  },
+  {
+    name: "nvidia",
+    description: "Download latest NVIDIA Drivers!",
   },
 ];
 
@@ -18,9 +22,13 @@ client.on("ready", async () => {
   console.log(`Bot zalogowany jako ${client.user?.tag}!`);
 
   try {
-    await rest.put(Routes.applicationCommands(client.user!.id), {
-      body: commands,
-    });
+    await rest.put(
+      Routes.applicationGuildCommands(
+        client.user!.id,
+        String(process.env.GUILT_ID),
+      ),
+      { body: commands },
+    );
     console.log("Komendy slash zarejestrowane!");
   } catch (error) {
     console.error(error);
@@ -30,8 +38,13 @@ client.on("ready", async () => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === "ping") {
-    await interaction.reply("Pong! 🏓");
+  if (interaction.commandName === "clan_id") {
+    await interaction.reply("31259536");
+  }
+  if (interaction.commandName === "nvidia") {
+    await interaction.reply(
+      "https://www.nvidia.com/Download/index.aspx?utm_source=chatgpt.com",
+    );
   }
 });
 
