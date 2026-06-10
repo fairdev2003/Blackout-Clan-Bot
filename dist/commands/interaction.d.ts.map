@@ -1,1 +1,0 @@
-{"version":3,"file":"interaction.d.ts","sourceRoot":"","sources":["../../commands/interaction.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,MAAM,EAAe,MAAM,YAAY,CAAC;AAGtD,qBAAa,gBAAgB;IACf,OAAO,CAAC,MAAM;gBAAN,MAAM,EAAE,MAAM,CAAC,OAAO,CAAC;YAE7B,mBAAmB;IAYpB,2BAA2B;CAQzC"}

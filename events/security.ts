@@ -27,7 +27,7 @@ export class Security {
         const entry = auditLogs.entries.first();
 
         if (entry && entry.targetId === channel.id) {
-          const executor = entry.executor;
+          const author = entry.executor;
 
           await BlackoutEmbed.SendBaseEmbed(
             this.client,
@@ -35,7 +35,7 @@ export class Security {
             {
               color: 0x0099ff,
               title: "New channel created",
-              description: `📢 User **${executor?.tag}** created a new channel!`,
+              description: `📢 User **${author?.tag}** created a new channel!`,
               fields: [
                 { name: "Channel Name", inline: true, value: channel.name },
               ],

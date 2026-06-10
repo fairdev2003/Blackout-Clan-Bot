@@ -1,1 +1,0 @@
-{"version":3,"file":"static.d.ts","sourceRoot":"","sources":["../../static/static.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,YAAY,CAAC;AAE/C,oBAAY,QAAQ;IAClB,OAAO,aAAa;IACpB,WAAW,sEAAsE;CAClF;AAED,oBAAY,OAAO;IACjB,WAAW,OAAO;CACnB;AAED,oBAAY,iBAAiB;IAC3B,kBAAkB,sBAAsB;IACxC,SAAS,UAAU;CACpB;AAED,eAAO,MAAM,mBAAmB;;CAE/B,CAAC;AAEF,eAAO,MAAM,QAAQ;;;GASpB,CAAC"}
