@@ -11,10 +11,23 @@ export enum BotInfo {
 
 export enum BlackoutBotEvents {
   INTERACTION_CREATE = "interactionCreate",
+  BOT_READY = "ready",
 }
 
 export const blackout_bot_config = {
   intents: [GatewayIntentBits.Guilds],
+};
+
+type BlackoutChannel = "channel-logs";
+type BlackoutChannelRecord = Record<
+  BlackoutChannel,
+  {
+    ID: string;
+  }
+>;
+
+export const channels: BlackoutChannelRecord = {
+  "channel-logs": { ID: "1514089293814042634" },
 };
 
 export const commands = [

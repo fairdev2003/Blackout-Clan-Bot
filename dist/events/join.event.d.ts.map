@@ -1,0 +1,1 @@
+{"version":3,"file":"join.event.d.ts","sourceRoot":"","sources":["../../events/join.event.ts"],"names":[],"mappings":"AAAA,OAAO,EAA4B,KAAK,MAAM,EAAE,MAAM,YAAY,CAAC;AAEnE,qBAAa,QAAQ;IACP,OAAO,CAAC,MAAM;gBAAN,MAAM,EAAE,MAAM;YAEpB,WAAW;IAYZ,gBAAgB;CAc9B"}

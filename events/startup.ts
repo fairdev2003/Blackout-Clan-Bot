@@ -1,5 +1,5 @@
 import { REST, Routes, type Client } from "discord.js";
-import { commands } from "../static/static.js";
+import { BlackoutBotEvents, commands } from "../static/static.js";
 
 export class BlackoutBotStartup {
   constructor(private client: Client<boolean>) {}
@@ -9,8 +9,8 @@ export class BlackoutBotStartup {
   }
 
   public async RegisterBlackoutBotStartup({ rest }: { rest: REST }) {
-    this.client.on("ready", async () => {
-      console.log(`Bot zalogowany jako ${this.client.user?.tag}!`);
+    this.client.on(BlackoutBotEvents.BOT_READY, async () => {
+      console.log(`Bot logged in as ${this.client.user?.tag}!`);
 
       try {
         await rest.put(
@@ -20,7 +20,7 @@ export class BlackoutBotStartup {
           ),
           { body: commands },
         );
-        console.log("Komendy slash zarejestrowane!");
+        console.log("Slash command registered!");
       } catch (error) {
         console.error(error);
       }
