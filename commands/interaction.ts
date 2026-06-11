@@ -1,6 +1,7 @@
 import {
   ActionRowBuilder,
   EmbedBuilder,
+  GuildMember,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
@@ -91,6 +92,25 @@ export class InteractionEvent {
     }
 
     if (interaction.commandName === "clan-data") {
+      const allowedRoles = [
+        "1513999998638096514", // server head
+        "1513971700776042589", // leader
+        "1513971609948524565", // co-leader
+        "1513967750610026496", // admin
+        "1513971206599086233", // clan officer
+      ];
+      const member = interaction.member as GuildMember;
+
+      const hasRole = allowedRoles.some((roleId) =>
+        member?.roles.cache.has(roleId),
+      );
+
+      if (!hasRole) {
+        return await interaction.reply({
+          content: "❌ No permissions",
+          ephemeral: true,
+        });
+      }
       await interaction.deferReply();
 
       try {
