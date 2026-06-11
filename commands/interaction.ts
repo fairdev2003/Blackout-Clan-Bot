@@ -66,6 +66,7 @@ function createClanEmbed(clan_data: ClanData): EmbedBuilder {
         inline: false,
       },
     )
+
     .setFooter({
       text: "Blackout Asteroid Integration",
       iconURL: "https://asteroidpg3d.xyz/static/asteroid.gif",
