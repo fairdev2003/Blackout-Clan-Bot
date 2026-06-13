@@ -26,55 +26,94 @@ function findTopMember(data: ClanData): ClanMember | null {
   });
 }
 
-function createInvestigateEmbed(player: PlayerInfo): EmbedBuilder {
+function createInvestigateEmbed(player: any): EmbedBuilder {
   const ID_THRESHOLD = 344553554;
-  const isSuspicious = parseInt(player.id) > ID_THRESHOLD;
+  const isSuspicious = Number(player.id) > ID_THRESHOLD;
 
   const embed = new EmbedBuilder()
     .setTitle(`🔍 Investigation: ${player.username}`)
     .setColor(isSuspicious ? 0xff0000 : 0x00ff00)
     .setTimestamp();
 
-  // Dodajemy pole z oceną bezpieczeństwa
   embed.addFields({
-    name: "🛡️ Security Status",
+    name: ":shield: Security Status",
     value: isSuspicious
-      ? "⚠️ **Suspicious Account**\nID exceeds the known safe range, suggesting potential modifications."
-      : "✅ **Legit Account**\nID is within the normal range.",
+      ? ":warning: **Suspicious Account**\nID exceeds the known safe range."
+      : ":white_check_mark: **Legit Account**\nID is within the normal range.",
     inline: false,
   });
 
-  // Główne informacje
   embed.addFields(
     {
-      name: "👤 Player Info",
-      value: `**ID:** ${player.id}\n**Level:** ${player.level}\n**Created:** ${player.creation_date}`,
+      name: ":bust_in_silhouette: Account",
+      value: [
+        `🆔 ID: ${player.id}`,
+        `⭐ Level: ${player.level}`,
+        `📅 Created: ${player.creation_date}`,
+      ].join("\n"),
       inline: true,
     },
     {
-      name: "💰 Currency",
-      value: `**Gems:** ${player.currency.Gems ?? 0}\n**Coins:** ${player.currency.Coins ?? 0}`,
+      name: ":moneybag: Currency",
+      value: [
+        `💎 Gems: ${player.currency?.Gems ?? 0}`,
+        `🪙 Coins: ${player.currency?.Coins ?? 0}`,
+      ].join("\n"),
       inline: true,
     },
   );
 
-  // Dodajemy informacje o klanie, jeśli istnieje
+  embed.addFields({
+    name: ":bar_chart: Statistics",
+    value: [
+      `⚔️ Kills: ${player.kills?.toLocaleString?.() ?? "N/A"}`,
+      `💀 Deaths: ${player.deaths?.toLocaleString?.() ?? "N/A"}`,
+      `📈 K/D: ${player.kd_ratio ?? player.kd ?? "N/A"}`,
+    ].join("\n"),
+    inline: true,
+  });
+
+  embed.addFields({
+    name: ":school_satchel: Collection",
+    value: [
+      `🔫 Weapons: ${player.weapons_count ?? 0}`,
+      `🎯 Gadgets: ${player.gadgets_count ?? 0}`,
+      `🐾 Pets: ${player.pets_count ?? 0}`,
+      `📦 Sets: ${player.sets_count ?? "N/A"}`,
+      `⚙️ Modules: ${player.modules_count ?? "N/A"}`,
+    ].join("\n"),
+    inline: false,
+  });
+
   if (player.clan) {
     embed.addFields({
-      name: "🏰 Clan",
-      value: `**${player.clan.clanname}** (Rank: ${player.clan.clanrank})`,
+      name: ":european_castle: Clan",
+      value: [
+        `Name: ${player.clan.clanname ?? "None"}`,
+        `Rank: ${player.clan.clanrank ?? "Unknown"}`,
+      ].join("\n"),
       inline: false,
     });
   }
 
-  // Statystyki broni/ekwipunku
-  embed.addFields({
-    name: "📊 Stats",
-    value: `**Weapons:** ${player.weapons_count}\n**Gadgets:** ${player.gadgets_count}\n**Pets:** ${player.pets_count}`,
-    inline: false,
-  });
+  if (player.stats_30d || player.last30d) {
+    const s = player.stats_30d ?? player.last30d;
 
-  embed.setFooter({ text: "Blackout Asteroid Investigation System" });
+    embed.addFields({
+      name: ":date: Last 30 Days",
+      value: [
+        `⚔️ Kills: ${s.kills ?? "N/A"}`,
+        `💀 Deaths: ${s.deaths ?? "N/A"}`,
+        `📈 K/D: ${s.kd ?? "N/A"}`,
+        `🏆 Wins: ${s.wins ?? "N/A"}`,
+      ].join("\n"),
+      inline: false,
+    });
+  }
+
+  embed.setFooter({
+    text: "Blackout Asteroid Investigation System",
+  });
 
   return embed;
 }
