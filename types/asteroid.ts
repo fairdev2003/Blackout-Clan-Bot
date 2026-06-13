@@ -24,6 +24,7 @@ export type ClanInfo = {
 
 export type ClanData = {
   info: ClanInfo;
+  members: ClanMember[];
 };
 
 export type ClanMember = {
