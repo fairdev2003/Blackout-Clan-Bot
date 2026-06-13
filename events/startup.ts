@@ -1,5 +1,6 @@
 import { REST, Routes, type Client } from "discord.js";
-import { BlackoutBotEvents, commands } from "../static/static.js";
+import { BlackoutBotEvents } from "../static/static.js";
+import { commands } from "../commands/commands.js";
 
 export class BlackoutBotStartup {
   constructor(private client: Client<boolean>) {}

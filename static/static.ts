@@ -1,4 +1,5 @@
 import { GatewayIntentBits } from "discord.js";
+import { Commands } from "../commands/commands.js";
 
 export enum ClanInfo {
   CLAN_ID = "31259536",
@@ -53,4 +54,9 @@ export const commands = [
     name: "clan-data",
     description: "Get live data about Blackout Clan",
   },
+  {
+    name: "investigate",
+    description: "Get live data about Blackout Clan",
+  },
+  [Commands.investigate].map((cmd) => cmd.toJSON()),
 ];
