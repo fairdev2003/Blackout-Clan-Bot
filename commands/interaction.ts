@@ -16,6 +16,7 @@ import axios, { Axios, type AxiosResponse } from "axios";
 import type {
   ClanData,
   ClanMember,
+  ClanValorHistory,
   PlayerData,
   PlayerInfo,
 } from "../types/asteroid.js";
@@ -28,9 +29,74 @@ function findTopMember(data: ClanData): ClanMember | null {
   });
 }
 
+function createValorHistoryEmbed(data: ClanValorHistory): EmbedBuilder {
+  const history = data.history;
+
+  // 1. Obliczamy statystyki
+  const totalValor = history.reduce(
+    (sum: number, h: any) => sum + h.valor_gained,
+    0,
+  );
+  const avgCollectors = (
+    history.reduce((sum: number, h: any) => sum + h.collectors, 0) /
+    history.length
+  ).toFixed(1);
+
+  const bestPeriod = history.reduce((prev: any, current: any) =>
+    prev.valor_gained > current.valor_gained ? prev : current,
+  );
+
+  const recentHistory = history
+    .slice(-5)
+    .reverse()
+    .map((h: any) => {
+      const date = new Date(h.period).toLocaleTimeString("pl-PL", {
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "numeric",
+        month: "numeric",
+      });
+      return `📅 ${date} | <:Team:1515803748784406640> ${h.collectors} | <:ClanValor:1515803723643879564> ${h.valor_gained.toLocaleString()}`;
+    })
+    .join("\n");
+
+  const embed = new EmbedBuilder()
+    .setTitle("<:Team:1515803748784406640> Income History")
+    .setColor(0x0099ff)
+    .addFields(
+      {
+        name: "<:ClanValor:1515803723643879564> Total Valor Gained",
+        value: `**${totalValor.toLocaleString()}**`,
+        inline: true,
+      },
+      {
+        name: "<:Team:1515803748784406640> Avg Collectors",
+        value: `**${avgCollectors}**`,
+        inline: true,
+      },
+      {
+        name: "🔥 Peak Performance",
+        value: `**${bestPeriod.valor_gained.toLocaleString()}** <:ClanValor:1515803723643879564> from incomes\nat ${new Date(bestPeriod.period).toLocaleString("pl-PL")}`,
+        inline: false,
+      },
+      { name: "🕒 Last 5 Records", value: recentHistory || "No data" },
+    );
+  embed
+    .setFooter({
+      text: "Blackout Asteroid Integration",
+      iconURL: "https://asteroidpg3d.xyz/static/asteroid.gif",
+    })
+    .setTimestamp();
+
+  return embed;
+}
+
 function createInvestigateEmbed(player: any): EmbedBuilder {
   const ID_THRESHOLD = 344553554;
   const isSuspicious = Number(player.id) > ID_THRESHOLD;
+  const kills = player.info;
+  const deaths = player.total_deaths;
+  const kd = player.total_killrate;
 
   const embed = new EmbedBuilder()
     .setTitle(`🔍 Investigation: ${player.username}`)
@@ -68,9 +134,9 @@ function createInvestigateEmbed(player: any): EmbedBuilder {
   embed.addFields({
     name: ":bar_chart: Statistics",
     value: [
-      `⚔️ Kills: ${player.kills?.toLocaleString?.() ?? "N/A"}`,
-      `💀 Deaths: ${player.deaths?.toLocaleString?.() ?? "N/A"}`,
-      `📈 K/D: ${player.kd_ratio ?? player.kd ?? "N/A"}`,
+      `⚔️ Kills: ${player.stats.duel_wins?.toLocaleString?.() ?? "N/A"}`,
+      `💀 Deaths: ${player.stats.total_deaths?.toLocaleString?.() ?? "N/A"}`,
+      `📈 K/D: ${player.stats.total_killrate ?? "N/A"}`,
     ].join("\n"),
     inline: true,
   });
@@ -229,6 +295,33 @@ export class InteractionEvent {
           ephemeral: true,
         });
       }
+
+      // ----- VALOR HISTORY ---------
+      if (interaction.customId === "income_history") {
+        if (!this.clanCache) {
+          return await interaction.reply({
+            content: "❌ Cache expired. Use the `/clan-data` command again.",
+            ephemeral: true,
+          });
+        }
+        await interaction.deferReply();
+
+        try {
+          const response: AxiosResponse<ClanValorHistory> = await axios.get(
+            `https://api.klimson.dev/pg3d/clan/valor_history/${this.clanCache.data.clan_info.clan_id}`,
+          );
+
+          const embed = createValorHistoryEmbed(response.data);
+
+          await interaction.editReply({ embeds: [embed] });
+        } catch (error) {
+          console.log(error);
+          await interaction.editReply({
+            content: String(error),
+          });
+        }
+      }
+      // ----- VALOR HISTORY ---------
     }
 
     if (!interaction.isChatInputCommand()) return;
@@ -356,7 +449,13 @@ export class InteractionEvent {
           new ButtonBuilder()
             .setCustomId("clan_members")
             .setLabel("Clan members")
-            .setStyle(ButtonStyle.Primary),
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji("1515803748784406640"),
+          new ButtonBuilder()
+            .setCustomId("income_history")
+            .setLabel("Income History")
+            .setStyle(ButtonStyle.Secondary)
+            .setEmoji("1515803723643879564"),
         );
 
         await interaction.editReply({ embeds: [embed], components: [row] });

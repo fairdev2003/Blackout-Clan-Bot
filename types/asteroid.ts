@@ -185,3 +185,13 @@ export type WearItem = {
   name: string | null;
   type: string;
 };
+
+export type ClanValorHistory = {
+  history: ValorHistory[];
+};
+
+export type ValorHistory = {
+  collectors: number;
+  period: string;
+  valor_gained: number;
+};
