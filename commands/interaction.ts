@@ -234,6 +234,19 @@ export class InteractionEvent {
     if (!interaction.isChatInputCommand()) return;
 
     if (interaction.commandName === "purge") {
+      const member = interaction.member as GuildMember;
+
+      const hasRole = this.allowedRoles.some((roleId) =>
+        member?.roles.cache.has(roleId),
+      );
+
+      if (!hasRole) {
+        return await interaction.reply({
+          content: "❌ No permissions",
+          ephemeral: true,
+        });
+      }
+
       const amount = interaction.options.getInteger("amount")!;
 
       if (amount < 1 || amount > 100) {
