@@ -1,5 +1,7 @@
 import {
   ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   EmbedBuilder,
   GuildMember,
   ModalBuilder,
@@ -112,7 +114,8 @@ function createInvestigateEmbed(player: any): EmbedBuilder {
   }
 
   embed.setFooter({
-    text: "Blackout Asteroid Investigation System",
+    text: "Blackout Asteroid Integration",
+    iconURL: "https://asteroidpg3d.xyz/static/asteroid.gif",
   });
 
   return embed;
@@ -178,6 +181,9 @@ function createClanEmbed(clan_data: ClanData): EmbedBuilder {
 export class InteractionEvent {
   constructor(private client: Client<boolean>) {}
 
+  private clanCache: { data: ClanData; timestamp: number } | null = null;
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minut w milisekundach
+
   private allowedRoles = [
     "1513999998638096514", // server head
     "1513971700776042589", // leader
@@ -186,19 +192,81 @@ export class InteractionEvent {
     "1513971206599086233", // clan officer
   ];
 
-  private investigate = new SlashCommandBuilder()
-    .setName("investigate")
-    .setDescription("Check the chances of modded account.")
-    .addIntegerOption((option) =>
-      option
-        .setName("user_id")
-        .setDescription("Target account ID")
-        .setRequired(true),
-    );
-
   private async InteractionCommands(interaction: Interaction) {
+    if (interaction.isButton()) {
+      if (interaction.customId === "clan_members") {
+        if (!this.clanCache) {
+          return await interaction.reply({
+            content: "❌ Cache expired. Use the `/clan-data` command again.",
+            ephemeral: true,
+          });
+        }
+
+        const members = this.clanCache.data.members;
+
+        const memberList = members
+          .sort((a, b) => b.valor - a.valor)
+          .map(
+            (m, index) =>
+              `${index + 1}. **${m.name}** - Valor: ${m.valor.toLocaleString()}`,
+          )
+          .join("\n");
+
+        const embed = new EmbedBuilder()
+          .setTitle(`🏰 Clan Members (${members.length}/50)`)
+          .setDescription(
+            memberList.length > 4096 ? "List too long to display." : memberList,
+          )
+          .setColor(0x8b0000)
+          .setTimestamp()
+          .setFooter({
+            text: "Blackout Asteroid Integration",
+            iconURL: "https://asteroidpg3d.xyz/static/asteroid.gif",
+          });
+
+        return await interaction.reply({
+          embeds: [embed],
+          ephemeral: true,
+        });
+      }
+    }
+
     if (!interaction.isChatInputCommand()) return;
 
+    if (interaction.commandName === "purge") {
+      const amount = interaction.options.getInteger("amount")!;
+
+      if (amount < 1 || amount > 100) {
+        return await interaction.reply({
+          content: "You can only delete between 1 and 100 messages at once.",
+          ephemeral: true,
+        });
+      }
+
+      try {
+        await interaction.deferReply({ ephemeral: true });
+
+        const channel = interaction.channel;
+
+        if (channel && channel.isTextBased() && "bulkDelete" in channel) {
+          const deleted = await channel.bulkDelete(amount, true);
+
+          await interaction.editReply({
+            content: `✅ Successfully deleted ${deleted.size} messages.`,
+          });
+        } else {
+          await interaction.editReply({
+            content: "❌ I cannot delete messages in this type of channel.",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        await interaction.editReply({
+          content:
+            "An error occurred while deleting messages. Please note that I cannot delete messages older than 14 days.",
+        });
+      }
+    }
     if (interaction.commandName === "clan_id") {
       await interaction.reply(ClanInfo.CLAN_ID);
     }
@@ -253,16 +321,32 @@ export class InteractionEvent {
           ephemeral: true,
         });
       }
+
       await interaction.deferReply();
 
       try {
-        const response = await axios.get(
-          "https://api.klimson.dev/pg3d/clan_info/31259536",
+        // Sprawdź czy mamy dane w cache i czy są świeże
+        if (
+          !this.clanCache ||
+          Date.now() - this.clanCache.timestamp > this.CACHE_DURATION
+        ) {
+          const response = await axios.get(
+            "https://api.klimson.dev/pg3d/clan_info/31259536",
+          );
+          this.clanCache = { data: response.data, timestamp: Date.now() };
+        }
+
+        const clanData = this.clanCache.data;
+        const embed = createClanEmbed(clanData);
+
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+          new ButtonBuilder()
+            .setCustomId("clan_members")
+            .setLabel("Clan members")
+            .setStyle(ButtonStyle.Primary),
         );
 
-        const embed = createClanEmbed(response.data);
-
-        await interaction.editReply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed], components: [row] });
       } catch (error) {
         console.error(error);
         await interaction.editReply({

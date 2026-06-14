@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 
 export const commands = [
   new SlashCommandBuilder()
@@ -19,6 +19,16 @@ export const commands = [
         .setDescription("Target account ID")
         .setRequired(true),
     ),
+  new SlashCommandBuilder()
+    .setName("purge")
+    .setDescription("Bulk delete messages")
+    .addIntegerOption((option) =>
+      option
+        .setName("amount")
+        .setDescription("Messages amount to delete (1-100)")
+        .setRequired(true),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 ].map((cmd) => cmd.toJSON());
 
 export class Commands {
