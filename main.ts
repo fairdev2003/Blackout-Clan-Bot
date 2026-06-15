@@ -1,4 +1,4 @@
-import { Client, REST } from "discord.js";
+import { ActivityType, Client, REST } from "discord.js";
 import * as dotenv from "dotenv";
 import {
   blackout_bot_config,
@@ -20,13 +20,14 @@ const blkt_bot = new BlackoutBot(client);
 blkt_bot.startup.RegisterBlackoutBotStartup({ rest });
 blkt_bot.interaction.RegisterInteractionCommands();
 blkt_bot.security.RegisterSecurity();
-// blkt_bot.auto_role.RegisterAutoRoleBundle(
-//   channels["auto-role"].ID,
-//   roles["task-helper"].ID,
-// );
 
 client.once("ready", () => {
   blkt_bot.auto_role.RegisterAutoRoleBundle(autorole_instance);
+  client.user?.setActivity("Clan Members", {
+    type: ActivityType.Watching,
+  });
+  blkt_bot.task_completion.RegisterTaskCompletionNoMessagesRule();
+  blkt_bot.task_completion.RegisterTaskChannelClear();
 });
 
 blkt_bot.startup.ClientStart(process.env.DISCORD_TOKEN);
