@@ -1,3 +1,4 @@
+import axios, { type AxiosResponse } from "axios";
 import { ChannelType, type Client } from "discord.js";
 import cron from "node-cron";
 
@@ -23,8 +24,7 @@ export class TaskCompletion {
 
       const isIgnored =
         userRoleIds.some((roleId) => this.rolesToIgnore.includes(roleId)) ||
-        message.author.id === message.guild?.ownerId ||
-        !!message.reference;
+        message.author.id === message.guild?.ownerId;
 
       if (isIgnored) return;
 
@@ -39,24 +39,43 @@ export class TaskCompletion {
   public async RegisterTaskChannelClear() {
     console.log("registered cron job");
     cron.schedule(
-      "0 10 * * *",
+      "00 10 * * *",
       async () => {
+        const daysOfWeek = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const today = new Date();
+        const dayNumber = today.getDay();
+        const dayName = daysOfWeek[dayNumber];
         const channelId = this.task_completion_channel_id;
         const channel = await this.client.channels.fetch(channelId);
 
         if (channel && channel.type === ChannelType.GuildText) {
-          const daysOfWeek = [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-          ];
+          const response: AxiosResponse<{ key: string; value: string }> =
+            await axios.get(
+              "https://api.klimson.dev/context_storage/public/single/war_start",
+            );
 
-          const today = new Date();
-          const dayName = daysOfWeek[today.getDay()];
+          console.log(response.data.value);
+          console.log(typeof response.data.value);
+
+          if (dayNumber === 1) {
+            console.log("Not a war day");
+            return;
+          }
+
+          if (Number(response.data.value) === 3) {
+            console.log("Late register");
+            if (dayNumber === 2) {
+              return;
+            }
+          }
 
           try {
             const fetched = await channel.messages.fetch({ limit: 100 });
