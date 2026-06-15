@@ -5,6 +5,9 @@ export const commands = [
     .setName("clan_id")
     .setDescription("Showing current id of blackout clan!"),
   new SlashCommandBuilder()
+    .setName("joe363")
+    .setDescription("Jedna krecha i łeb masz zajebany."),
+  new SlashCommandBuilder()
     .setName("nvidia")
     .setDescription("Download latest NVIDIA Drivers!"),
   new SlashCommandBuilder()

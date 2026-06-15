@@ -2,6 +2,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
   EmbedBuilder,
   GuildMember,
   ModalBuilder,
@@ -375,6 +376,102 @@ export class InteractionEvent {
     }
     if (interaction.commandName === "clan_id") {
       await interaction.reply(ClanInfo.CLAN_ID);
+    }
+
+    if (interaction.commandName === "joe363") {
+      const channel = interaction.channel;
+
+      const holandia = "Holandia obciaga";
+
+      const przemyslenia = `
+      ej szczerze
+szachy sa w huj fajne
+tylko myslec sporo trzeba ale spk
+wlasnie sie najebalem wsm
+a alkohol to najwiekszy syf
+imo
+w  sensie ten xsam poziom co krysztal
+w sensie szkod
+chociaz krisa mozna codziennie
+a alko nwm zalezy
+a mialbys dex i ziolo
+lub eufo
+ale huj
+ostatecznie zostal jedyny legalny narko alko
+w sensie legalny jeszcze jest koda czy dex i duzo tego
+ale nie chce mi sie wpierdalac tabletek xd
+czy innego gowna legalnego
+chociaz weicie dex  jest mocniejszy od kokainy czy dmt czy innego mocnego gowna na wyzszych dawkach
+a jest legalny
+xd
+to jakis jebany zart
+ze ziola nie dadza legalnego chociaz mzoe sie zdziwicie ale jestrem przeciw jego legalizacji
+w sensie wszystko legalne ale z umairem
+ziolo zwlaszcza w tych czasach
+ma tyle procent thc ze jprdl
+      `;
+
+      const przemyslenia2 = `
+      ej mam pytanie do kogokolwiek co
+uwaza se za moralnosc
+to nawet do siebie
+bo wiecie dla niektorych slub w wieku 12 lat jest moralny a dla niekotrych szczanie na chodnik np nie
+warto se to ustalic
+przed zaczeciem zycia
+co jest moralne a co nie dla was bo kazdy ma inne
+zdanie na ten temat
+dla mnie np wszystko mozna robic
+nic nie jest niemoralne
+tylko przemoc
+zwlaszcza psychiczna
+to jedyna moralna zasada reszte wszystko mozna
+w sensie fizyczna
+psychiczna tez
+wsm
+poprostu nie robic krzywdy innym ludziom
+
+      `;
+
+      const przekaski = `
+      https://media.discordapp.net/attachments/1377967466956718181/1504854589218750504/IMG20260507215208.jpg?ex=6a30b64c&is=6a2f64cc&hm=856c131aed696b47f0086aca7711ad6b40adb540cf91466b5baaf49df8e22c3d&=&format=webp&width=1301&height=976
+      Fajne przekąski?
+      `;
+
+      const wyniki_ziola =
+        "https://api.klimson.dev/interface/bucket/blackout_bot/IMG20260123104933.jpg";
+
+      const random = [
+        wyniki_ziola,
+        holandia,
+        przemyslenia2,
+        przemyslenia,
+        przekaski,
+      ];
+
+      if (channel && channel.type === ChannelType.GuildText) {
+        try {
+          const webhook = await channel.createWebhook({
+            name: "Kuźnia drąga",
+            avatar:
+              "https://api.klimson.dev/interface/bucket/blackout_bot/60c9604565e145c5ce103791752e47b4.png",
+          });
+
+          const randomMessage =
+            random[Math.floor(Math.random() * random.length)];
+          if (randomMessage) {
+            await webhook.send(randomMessage);
+          }
+
+          await interaction.reply({ content: "Sent!", ephemeral: true });
+        } catch (error) {
+          console.error("Webhook error:", error);
+        }
+      } else {
+        await interaction.reply({
+          content: "This command only works in server text channels.",
+          ephemeral: true,
+        });
+      }
     }
 
     if (interaction.commandName === "nvidia") {
