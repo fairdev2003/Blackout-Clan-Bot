@@ -78,9 +78,9 @@ export class TaskCompletion {
           }
 
           try {
-            const fetched = await channel.messages.fetch({ limit: 100 });
+            // const fetched = await channel.messages.fetch({ limit: 100 });
 
-            await channel.bulkDelete(fetched, true);
+            // await channel.bulkDelete(fetched, true);
 
             await channel.send(`📅 **New Day - ${dayName}**`);
 
