@@ -50,6 +50,7 @@ export class TaskCompletion {
           "Friday",
           "Saturday",
         ];
+
         const today = new Date();
         const dayNumber = today.getDay();
         const dayName = daysOfWeek[dayNumber];

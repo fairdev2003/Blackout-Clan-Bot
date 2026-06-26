@@ -1,5 +1,5 @@
 import { EmbedBuilder, TextChannel, type Client } from "discord.js";
-import type { AutoRoleBundle } from "../types/autorole.types.js";
+import type { AutoRoleBundle } from "./types/autorole.types.js";
 
 export class AutoRole {
   constructor(private client: Client) {}
